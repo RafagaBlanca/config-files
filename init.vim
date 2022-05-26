@@ -1,46 +1,90 @@
-:set number
-:set relativenumber
-:set autoindent
-:set tabstop=4
-:set shiftwidth=4
-:set smarttab
-:set softtabstop=4
-:set mouse=a
-:set nowrap
-:set clipboard=unnamedplus
-:set noshowmode
-:set noswapfile
-:set cursorline
-call plug#begin('/home/whiteburst/.config/nvim/plugged')
+syntax on
 
-Plug 'http://github.com/tpope/vim-surround' " Surrounding ysw)
-Plug 'https://github.com/vim-airline/vim-airline' " Status bar
-Plug 'https://github.com/preservim/nerdtree' " NerdTree
-Plug 'https://github.com/tpope/vim-commentary' " For Commenting gcc & gc
-Plug 'https://github.com/ap/vim-css-color' " CSS Color Preview
-Plug 'https://github.com/rafi/awesome-vim-colorschemes' " Retro Scheme
-Plug 'https://github.com/ryanoasis/vim-devicons' " Developer Icons
-Plug 'https://github.com/tc50cal/vim-terminal' " Vim Terminal
-Plug 'https://github.com/terryma/vim-multiple-cursors' " CTRL + N for multiple cursors
-Plug 'https://github.com/preservim/tagbar' " Tagbar for code navigation
-Plug 'https://github.com/neoclide/coc.nvim'  " Auto Completion
-set encoding=UTF-8
+set ma
+set mouse=a
+set cursorline
+set tabstop=4
+set shiftwidth=4
+set noexpandtab
+set autoread
+set nobackup
+set nowritebackup
+set noswapfile
+set relativenumber
+set foldlevelstart=99
+set encoding=UTF_8
+syntax enable
+set scrolloff=7
+set clipboard+=unnamedplus
+set hidden
+set confirm
+set autowriteall
+set wildmenu wildmode=full
+set splitright
+call plug#begin('~/.config/nvim/plugged/')
+
+"Colour Scheme
+Plug 'dracula/vim', {'as': 'dracula'}
+
+"Syntax plugin
+Plug 'vim-syntastic/syntastic'
+
+"Auto complete
+
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'github/copilot.vim'
+
+"Nav plugins
+Plug 'jistr/vim-nerdtree-tabs'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'preservim/NERDTree'
+Plug 'ryanoasis/vim-devicons'
+Plug 'jiangmiao/auto-pairs'
+Plug 'vim-airline/vim-airline'
+Plug 'preservim/tagbar'
+
+"Git
+
+Plug 'Xuyuanp/nerdtree-git-plugin'
+
+"Comment Plugin
+Plug 'preservim/nerdcommenter'
+
+"Auto-format plugin
+Plug 'sbdchd/neoformat'
+
+"Code Folding
+Plug 'tmhedberg/SimpylFold'
 
 call plug#end()
 
-nmap <F8> :TagbarToggle<CR>
+colorscheme dracula
+let mapleader = " "
 
-:set completeopt-=preview " For No Previews
+inoremap ;; <Esc>
 
-:colorscheme jellybeans
+" Use <c-space> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+    endif
 
-nnoremap <C-f> :NERDTreeFocus<CR>
-nnoremap <C-n> :NERDTree<CR>
-nnoremap <C-t> :NERDTreeToggle<CR>
-tnoremap <Esc> <C-\><C-n>
+"Disable relative number
+
+nnoremap <silent> <leader>ln :set rnu!<CR>
 
 
+"Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
 
+"Tagbar
+nnoremap <silent> <leader>tb :TagbarToggle<CR>
+nnoremap <silent> <leader>nt :NERDTreeToggle<CR>
+
+
+"Buffers
+nnoremap <silent> <leader>cb :bd<CR>
 "To use `ALT+{h,j,k,l}` to navigate windows from any mode:
     :tnoremap <A-h> <C-\><C-N><C-w>h
     :tnoremap <A-j> <C-\><C-N><C-w>j
@@ -56,18 +100,39 @@ tnoremap <Esc> <C-\><C-n>
     :nnoremap <A-l> <C-w>l
 
 
+" Auto start NERD tree if no files are specified
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | exe 'NERDTree' | endif
 
+" Let quit work as expected if after entering :q the only window left open is NERD Tree itself
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
+let s:hidden_all = 0
+function! ToggleHiddenAll()
+    if s:hidden_all  == 0
+        let s:hidden_all = 1
+        set noshowmode
+        set noruler
+        set laststatus=0
+        set noshowcmd
+	TagbarClose
+	NERDTreeClose
+       
 
-let g:NERDTreeDirArrowExpandable="+"
-let g:NERDTreeDirArrowCollapsible="~"
-" air-line
-let g:airline_powerline_fonts = 1
+    else
+	set foldcolumn=0
+        let s:hidden_all = 0
+        set showmode
+        set ruler
+        set laststatus=2 
+        set showcmd
+	NERDTree
+	" NERDTree takes focus, so move focus back to the right
+	" (note: "l" is lowercase L (mapped to moving right)
+	wincmd l
+	TagbarOpen
 
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-endif
-inoremap <expr> <Tab> pumvisible() ? coc#_select_confirm() : "<Tab>"
+    endif
+endfunction
 
-command! -nargs=0 Prettier :CocCommand prettier.formatFile
-
+nnoremap <silent> <leader>h :call ToggleHiddenAll()<CR>
