@@ -16,16 +16,19 @@ set encoding=UTF_8
 syntax enable
 set scrolloff=7
 set clipboard+=unnamedplus
+set number
 set hidden
 set confirm
 set autowriteall
 set wildmenu wildmode=full
 set splitright
+set cursorline
+set cursorcolumn
 call plug#begin('~/.config/nvim/plugged/')
 
 "Colour Scheme
 Plug 'dracula/vim', {'as': 'dracula'}
-
+Plug 'shaunsingh/nord.nvim', {'as': 'nord'}
 "Syntax plugin
 Plug 'vim-syntastic/syntastic'
 
@@ -33,7 +36,7 @@ Plug 'vim-syntastic/syntastic'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'github/copilot.vim'
-
+Plug 'neovim/nvim-lspconfig'
 "Nav plugins
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
@@ -46,7 +49,7 @@ Plug 'preservim/tagbar'
 "Git
 
 Plug 'Xuyuanp/nerdtree-git-plugin'
-
+Plug 'tpope/vim-fugitive'
 "Comment Plugin
 Plug 'preservim/nerdcommenter'
 
@@ -56,11 +59,12 @@ Plug 'sbdchd/neoformat'
 "Code Folding
 Plug 'tmhedberg/SimpylFold'
 
+"Web
+Plug 'turbio/bracey.vim', {'do': 'npm install --prefix server'}
 call plug#end()
 
-colorscheme dracula
+colorscheme nord
 let mapleader = " "
-
 inoremap ;; <Esc>
 
 " Use <c-space> to trigger completion.
@@ -136,3 +140,6 @@ function! ToggleHiddenAll()
 endfunction
 
 nnoremap <silent> <leader>h :call ToggleHiddenAll()<CR>
+
+"Bracey
+
