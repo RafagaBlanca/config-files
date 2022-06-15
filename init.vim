@@ -29,11 +29,13 @@ call plug#begin('~/.config/nvim/plugged/')
 "Colour Scheme
 Plug 'dracula/vim', {'as': 'dracula'}
 Plug 'shaunsingh/nord.nvim', {'as': 'nord'}
+Plug 'sainnhe/edge', {'as': 'edge'}
+Plug 'folke/tokyonight.nvim',{'branch': 'main'}
 "Syntax plugin
 Plug 'vim-syntastic/syntastic'
 
 "Auto complete
-
+Plug 'Pocco81/AutoSave.nvim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'github/copilot.vim'
 Plug 'neovim/nvim-lspconfig'
@@ -60,10 +62,16 @@ Plug 'sbdchd/neoformat'
 Plug 'tmhedberg/SimpylFold'
 
 "Web
-Plug 'turbio/bracey.vim', {'do': 'npm install --prefix server'}
+Plug 'turbio/bracey.vim'
 call plug#end()
+ " Important!!
+        if has('termguicolors')
+          set termguicolors
+        endif
 
-colorscheme nord
+let g:tokyonight_transparent = 1
+let g:tokyonight_italic_function = 1
+colorscheme tokyonight
 let mapleader = " "
 inoremap ;; <Esc>
 
@@ -141,5 +149,24 @@ endfunction
 
 nnoremap <silent> <leader>h :call ToggleHiddenAll()<CR>
 
-"Bracey
+lua << EOF
+local autosave = require("autosave")
 
+autosave.setup(
+    {
+        enabled = true,
+        execution_message = "AutoSave: saved at " .. vim.fn.strftime("%H:%M:%S"),
+        events = {"InsertLeave", "TextChanged"},
+        conditions = {
+            exists = true,
+            filename_is_not = {},
+            filetype_is_not = {},
+            modifiable = true
+        },
+        write_all_buffers = false,
+        on_off_commands = true,
+        clean_command_line_interval = 0,
+        debounce_delay = 135
+    }
+)
+EOF
