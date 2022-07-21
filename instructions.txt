@@ -1,0 +1,23 @@
+#Dev LunarVim
+sudo pacman -S git
+sudo pacman -S python-pynvim
+sudo pacman -S nodejs=16.6.0 npm
+sudo pacman -S python-pip3
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+LV_BRANCH=rolling bash <(curl -s https://raw.githubusercontent.com/lunarvim/lunarvim/rolling/utils/installer/install.sh)
+#DIInstall error https://github.com/LunarVim/LunarVim/issues/2631
+sudo pacman -S xclip //copy to clipboard in vim
+#Me
+yay libresprite (1)
+sudo pacman -S nitrogen
+
+
+
+
+
+#Battery Thresholds https://wiki.archlinux.org/title/Huawei_MateBook_14_AMD_(2020)#Battery_protection
+yay -S huawei-wmi
+root permission echo '40 70' > /sys/devices/platform/huawei-wmi/charge_control_thresholds
+
+#Blacklight https://github.com/aymanbagabas/Huawei-WMI/issues/8
+sudo pacman -S brightnessctl
